@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="DOT Tag - Visualización 3D" />
+        <meta name="author" content="Toto" />
+        <title>DOT Tag Model</title>
+        <link rel="icon" type="image/x-icon" href="assets/icon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Model Viewer -->
+        <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+        <link href="css/styles.css" rel="stylesheet" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Nunito', sans-serif;
+                background-color: #ffffff;
+                color: #333;
+                line-height: 1.6;
+            }
+
+            /* Navigation Bar */
+            .navbar {
+                background-color: #ffffff;
+                padding: 1rem 2rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 1000;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #7B1E1E;
+                text-decoration: none;
+                letter-spacing: 2px;
+            }
+
+            .navbar-nav {
+                display: flex;
+                list-style: none;
+                gap: 2rem;
+            }
+
+            .nav-link {
+                color: #333;
+                text-decoration: none;
+                font-weight: 400;
+                font-size: 0.95rem;
+                transition: color 0.3s ease;
+                position: relative;
+            }
+
+            .nav-link:hover {
+                color: #7B1E1E;
+            }
+
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -5px;
+                left: 0;
+                background-color: #7B1E1E;
+                transition: width 0.3s ease;
+            }
+
+            .nav-link:hover::after {
+                width: 100%;
+            }
+
+            /* Hero Banner */
+            .hero-banner {
+                background: linear-gradient(135deg, #7B1E1E 0%, #5a1616 100%);
+                height: 40vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 70px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero-banner::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="1"/></g></svg>');
+                opacity: 0.3;
+            }
+
+            .hero-content {
+                text-align: center;
+                color: white;
+                z-index: 2;
+                position: relative;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+                letter-spacing: 3px;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+                font-weight: 300;
+                opacity: 0.9;
+                letter-spacing: 1px;
+            }
+
+            /* Main Content */
+            .main-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 4rem 2rem;
+            }
+
+            .section-title {
+                text-align: center;
+                font-size: 2.5rem;
+                font-weight: 300;
+                color: #7B1E1E;
+                margin-bottom: 3rem;
+                letter-spacing: 2px;
+            }
+
+            /* Model Viewer Container */
+            .model-section {
+                background-color: #ffffff;
+                border-radius: 0;
+                padding: 3rem;
+                box-shadow: 0 10px 40px rgba(123, 30, 30, 0.1);
+                margin-bottom: 4rem;
+                border: 1px solid #f0f0f0;
+            }
+
+            .model-viewer-container {
+                position: relative;
+                background: linear-gradient(145deg, #f8f9fa, #ffffff);
+                border-radius: 8px;
+                padding: 2rem;
+                box-shadow: 
+                    inset 0 2px 4px rgba(0, 0, 0, 0.05),
+                    0 5px 20px rgba(123, 30, 30, 0.08);
+            }
+
+            /* Fullscreen Overlay */
+            .fullscreen-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(123, 30, 30, 0.05);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+                backdrop-filter: blur(1px);
+            }
+
+            .fullscreen-overlay:hover {
+                background: rgba(123, 30, 30, 0.08);
+            }
+
+            .fullscreen-icon {
+                font-size: 3rem;
+                color: #7B1E1E;
+                margin-bottom: 1rem;
+                opacity: 0.8;
+                transition: all 0.3s ease;
+            }
+
+            .fullscreen-overlay:hover .fullscreen-icon {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            .fullscreen-text {
+                color: #7B1E1E;
+                font-size: 1.1rem;
+                font-weight: 500;
+                text-align: center;
+                letter-spacing: 1px;
+                opacity: 0.9;
+            }
+
+            /* Fullscreen model styles */
+            model-viewer:fullscreen {
+                background: #1a1a1a;
+            }
+
+            model-viewer {
+                width: 100%;
+                height: 600px;
+                background: transparent;
+                --poster-color: transparent;
+            }
+
+            /* Loading and Error States */
+            .loading-container,
+            .error-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                color: #7B1E1E;
+                font-weight: 300;
+            }
+
+            .loading-container i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                animation: spin 2s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .error-container i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                opacity: 0.6;
+            }
+
+            /* Model Controls */
+            .model-controls {
+                margin-top: 2rem;
+                text-align: center;
+                padding-top: 2rem;
+                border-top: 1px solid #e9ecef;
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .control-btn {
+                background: transparent;
+                border: 2px solid #7B1E1E;
+                color: #7B1E1E;
+                padding: 0.75rem 1.5rem;
+                border-radius: 0;
+                font-weight: 400;
+                font-size: 0.9rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .control-btn:hover {
+                background-color: #7B1E1E;
+                color: white;
+            }
+
+            .control-btn i {
+                margin-right: 0.5rem;
+            }
+
+            /* Info Section */
+            .info-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 3rem;
+                margin-top: 4rem;
+            }
+
+            .info-card {
+                text-align: center;
+                padding: 2rem;
+                background: #ffffff;
+                border: 1px solid #e9ecef;
+                transition: box-shadow 0.3s ease;
+            }
+
+            .info-card:hover {
+                box-shadow: 0 10px 30px rgba(123, 30, 30, 0.1);
+            }
+
+            .info-card-icon {
+                font-size: 2.5rem;
+                color: #7B1E1E;
+                margin-bottom: 1rem;
+            }
+
+            .info-card-title {
+                font-size: 1.3rem;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 1rem;
+                letter-spacing: 1px;
+            }
+
+            .info-card-text {
+                color: #666;
+                font-weight: 300;
+                line-height: 1.7;
+            }
+
+            /* POPUP STYLES - Formulario Médico */
+            .popup-overlay {
+                display: none;
+                position: fixed;
+                top: 0; 
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.6);
+                backdrop-filter: blur(3px);
+                z-index: 2000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .popup-content {
+                background: #fff;
+                padding: 30px;
+                border-radius: 10px;
+                width: 500px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                animation: popupFade 0.3s ease-in-out;
+                position: relative;
+            }
+
+            .popup-close {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #333;
+                background: none;
+                border: none;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .popup-close:hover {
+                color: #7B1E1E;
+            }
+
+            .popup-title {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #7B1E1E;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                color: #333;
+                font-weight: 500;
+                font-size: 0.9rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                width: 100%;
+                padding: 10px;
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                font-size: 14px;
+                transition: border-color 0.3s;
+                font-family: 'Nunito', sans-serif;
+            }
+
+            .form-group input:focus,
+            .form-group textarea:focus,
+            .form-group select:focus {
+                outline: none;
+                border-color: #7B1E1E;
+            }
+
+            .form-group textarea {
+                resize: vertical;
+                min-height: 80px;
+            }
+
+            .form-section {
+                border-bottom: 1px solid #eee;
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+            }
+
+            .form-section:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+            }
+
+            .form-section-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #7B1E1E;
+                margin-bottom: 15px;
+                padding-bottom: 5px;
+                border-bottom: 2px solid #7B1E1E;
+            }
+
+            .save-btn {
+                width: 100%;
+                background: linear-gradient(135deg, #7B1E1E 0%, #A52A2A 100%);
+                color: white;
+                border: none;
+                padding: 12px;
+                border-radius: 5px;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: transform 0.2s;
+                margin-top: 20px;
+            }
+
+            .save-btn:hover {
+                transform: translateY(-2px);
+            }
+
+            .save-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+            /* POPUP PARA MOSTRAR INFORMACIÓN */
+            .info-display-overlay {
+                display: none;
+                position: fixed;
+                top: 0; 
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                backdrop-filter: blur(3px);
+                z-index: 3000;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .info-display-content {
+                background: #fff;
+                padding: 30px;
+                border-radius: 15px;
+                width: 450px;
+                max-width: 90%;
+                box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+                animation: popupFade 0.3s ease-in-out;
+                position: relative;
+                border: 3px solid #7B1E1E;
+            }
+
+            .info-display-title {
+                font-size: 1.6rem;
+                font-weight: 700;
+                color: #7B1E1E;
+                margin-bottom: 25px;
+                text-align: center;
+                letter-spacing: 1px;
+            }
+
+            .info-item {
+                margin-bottom: 15px;
+                padding: 10px;
+                background: #f8f9fa;
+                border-radius: 5px;
+            }
+
+            .info-label {
+                font-weight: 600;
+                color: #7B1E1E;
+                font-size: 0.9rem;
+                margin-bottom: 3px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-value {
+                color: #333;
+                font-size: 1rem;
+                line-height: 1.4;
+            }
+
+            .no-data-message {
+                text-align: center;
+                color: #666;
+                font-style: italic;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 5px;
+            }
+
+            @keyframes popupFade {
+                from { transform: scale(0.8); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .navbar {
+                    padding: 1rem;
+                }
+                
+                .navbar-nav {
+                    gap: 1rem;
+                }
+                
+                .hero-title {
+                    font-size: 2rem;
+                }
+                
+                .hero-subtitle {
+                    font-size: 1rem;
+                }
+                
+                .main-container {
+                    padding: 2rem 1rem;
+                }
+                
+                .model-section {
+                    padding: 1.5rem;
+                }
+                
+                model-viewer {
+                    height: 400px;
+                }
+                
+                .section-title {
+                    font-size: 2rem;
+                }
+
+                .model-controls {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .popup-content {
+                    width: 95%;
+                    padding: 20px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar">
+            <a href="#" class="navbar-brand">DOT · Tag</a>
+            <ul class="navbar-nav">
+                <li><a href="index.html" class="nav-link"> &lt;- Volver</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero Banner -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <img src="assets/img/icon2.svg" alt="Logo" class="m-3" style="max-height: 290px;">
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <section id="visualizacion">
+                <h2 class="section-title">Tu Tag es ÚNICO</h2>
+                
+                <div class="model-section">
+                    <div class="model-viewer-container">
+                        <!-- Overlay para activar pantalla completa -->
+                        <div class="fullscreen-overlay" id="fullscreen-overlay" onclick="enterFullscreenMode()">
+                            <i class="fas fa-expand-arrows-alt fullscreen-icon"></i>
+                        </div>
+
+                        <model-viewer
+                            id="model-viewer"
+                            src="DOT_tag.glb"
+                            alt="Modelo 3D DOT Tag"
+                            auto-rotate
+                            exposure="1"
+                            shadow-intensity="1"
+                            environment-image="neutral">
+                            
+                            <!-- Loading State -->
+                            <div slot="poster" class="loading-container">
+                                <i class="fas fa-circle-notch"></i>
+                                <p>Cargando modelo...</p>
+                            </div>
+                            
+                            <!-- Error State -->
+                            <div slot="error" class="error-container">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Error al cargar el modelo</p>
+                            </div>
+                        </model-viewer>
+                    </div>
+
+                    <div class="model-controls">
+                        <button class="control-btn" onclick="enterFullscreenMode()">
+                            <i class="fas fa-expand"></i>Modo Interactivo
+                        </button>
+                        <button class="control-btn" onclick="openMedicalForm()">
+                            <i class="fas fa-plus-circle"></i>Configurar Datos
+                        </button>
+                    </div>
+                    <div class="model-controls">
+                    <h3 class="info-card-title" style="text-align: center;">En el modo interactivo, dale a doble click para escanear</h3>
+                    </div>
+                </div>
+
+                <!-- Info Cards -->
+                <div class="info-section">
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <h3 class="info-card-title">Prototipo</h3>
+                        <p class="info-card-text">Diseño innovador desarrollado con precisión y atención al detalle para optimizar funcionalidad, con materiales resistentes y duraderos.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 class="info-card-title">Visualización</h3>
+                        <p class="info-card-text">Modelo 3D interactivo ideado para poder ver como podría verse un Tag y saber cómo funciona.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-card-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="info-card-title">Funcionalidad</h3>
+                        <p class="info-card-text">Al escanear tu Tag podrás visualizar un Back Up con información que hayas integrado para facilitar el acceso a esos datos vitales para ti, tu salud y para facilitarle el trabajo a quienes te rodean.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- POPUP FORMULARIO MÉDICO -->
+        <div id="medical-form-popup" class="popup-overlay">
+            <div class="popup-content">
+                <button class="popup-close" onclick="closeMedicalForm()">&times;</button>
+                <h2 class="popup-title">Configuración de Información Médica</h2>
+                
+                <form id="medical-form">
+                    <!-- Información Básica -->
+                    <div class="form-section">
+                        <div class="form-section-title">Información Básica</div>
+                        
+                        <div class="form-group">
+                            <label for="full_name">Nombre Completo</label>
+                            <input type="text" id="full_name" name="full_name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="blood_type">Grupo Sanguíneo</label>
+                            <select id="blood_type" name="blood_type" required>
+                                <option value="">Seleccionar</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="allergies">Alergias Médicas Importantes</label>
+                            <textarea id="allergies" name="allergies" placeholder="Ej: Penicilina, Frutos secos, Látex (solo las críticas)"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Contacto de Emergencia -->
+                    <div class="form-section">
+                        <div class="form-section-title">Contacto de Emergencia</div>
+                        
+                        <div class="form-group">
+                            <label for="emergency_contact_name">Nombre del Contacto</label>
+                            <input type="text" id="emergency_contact_name" name="emergency_contact_name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emergency_contact_phone">Número de Teléfono</label>
+                            <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" placeholder="+506 8888-8888" required>
+                        </div>
+                    </div>
+
+                    <!-- Información Médica Esencial -->
+                    <div class="form-section">
+                        <div class="form-section-title">Información Médica Esencial</div>
+                        
+                        <div class="form-group">
+                            <label for="medical_conditions">Condiciones Médicas Críticas</label>
+                            <textarea id="medical_conditions" name="medical_conditions" placeholder="Ej: Diabetes tipo 1, Epilepsia, Asma severo"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="vital_medications">Medicamentos Vitales</label>
+                            <textarea id="vital_medications" name="vital_medications" placeholder="Ej: Insulina, Epinefrina (EpiPen), Anticonvulsivantes"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-btn" id="save-btn">
+                        <i class="fas fa-save"></i> Guardar Información
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- POPUP MOSTRAR INFORMACIÓN -->
+        <div id="info-display-popup" class="info-display-overlay">
+            <div class="info-display-content">
+                <button class="popup-close" onclick="closeInfoDisplay()">&times;</button>
+                <h2 class="info-display-title">🚨 INFORMACIÓN MÉDICA DE EMERGENCIA</h2>
+                <div id="medical-info-content">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const modelViewer = document.querySelector('#model-viewer');
+            const fullscreenOverlay = document.querySelector('#fullscreen-overlay');
+            let autoRotateEnabled = true;
+            let doubleTapTimeout;
+            let lastTapTime = 0;
+
+            // Verificar autenticación al cargar la página
+            window.addEventListener('DOMContentLoaded', checkAuthentication);
+
+            async function checkAuthentication() {
+                try {
+                    const response = await fetch('/check-auth');
+                    const result = await response.json();
+                    
+                    if (!result.authenticated) {
+                        window.location.href = '/login.html';
+                    }
+                } catch (error) {
+                    console.error('Error verificando autenticación:', error);
+                    window.location.href = '/login.html';
+                }
+            }
+
+            // Función para entrar al modo pantalla completa interactivo
+            function enterFullscreenMode() {
+                if (modelViewer.requestFullscreen) {
+                    modelViewer.requestFullscreen().then(() => {
+                        // Habilitar controles solo en pantalla completa
+                        modelViewer.setAttribute('camera-controls', '');
+                        // Ocultar overlay
+                        fullscreenOverlay.style.display = 'none';
+                    }).catch(err => {
+                        console.log('Error al entrar en pantalla completa:', err);
+                    });
+                } else {
+                    // Fallback si no soporta fullscreen
+                    alert('Tu navegador no soporta pantalla completa');
+                }
+            }
+
+            // Detectar cuando se sale de pantalla completa
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    // Deshabilitar controles al salir de pantalla completa
+                    modelViewer.removeAttribute('camera-controls');
+                    // Mostrar overlay nuevamente
+                    fullscreenOverlay.style.display = 'flex';
+                    // Resetear cámara para la vista normal
+                    if (typeof modelViewer.resetTurntableRotation === 'function') {
+                        modelViewer.resetTurntableRotation();
+                    }
+                }
+            });
+
+// Detectar doble tap en el modelo en pantalla completa
+modelViewer.addEventListener('click', (event) => {
+    if (document.fullscreenElement) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        
+        if (tapLength < 500 && tapLength > 0) {
+            // Es un doble tap
+            showMedicalInfo();
+
+            // Salir del modo pantalla completa
+            document.exitFullscreen().catch(err => {
+                console.error("No se pudo salir del fullscreen:", err);
+            });
+        }
+        
+        lastTapTime = currentTime;
+    }
+});
+
+            // FUNCIONES DEL FORMULARIO MÉDICO
+            function openMedicalForm() {
+                document.getElementById('medical-form-popup').style.display = 'flex';
+                loadExistingData();
+            }
+
+            function closeMedicalForm() {
+                document.getElementById('medical-form-popup').style.display = 'none';
+            }
+
+            // Cargar datos existentes si los hay
+            async function loadExistingData() {
+                try {
+                    const response = await fetch('/get-medical-data');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data) {
+                            // Llenar el formulario con los datos existentes
+                            document.getElementById('full_name').value = data.full_name || '';
+                            document.getElementById('blood_type').value = data.blood_type || '';
+                            document.getElementById('allergies').value = data.allergies || '';
+                            document.getElementById('emergency_contact_name').value = data.emergency_contact_name || '';
+                            document.getElementById('emergency_contact_phone').value = data.emergency_contact_phone || '';
+                            document.getElementById('medical_conditions').value = data.medical_conditions || '';
+                            document.getElementById('vital_medications').value = data.vital_medications || '';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error cargando datos existentes:', error);
+                }
+            }
+
+            // Manejar envío del formulario médico
+            document.getElementById('medical-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const saveBtn = document.getElementById('save-btn');
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData);
+                
+                try {
+                    const response = await fetch('/save-medical-data', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        alert('✅ Información guardada correctamente');
+                        closeMedicalForm();
+                    } else {
+                        alert('❌ Error: ' + (result.error || 'No se pudo guardar la información'));
+                    }
+                } catch (error) {
+                    console.error('Error guardando datos:', error);
+                    alert('❌ Error de conexión');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Guardar Información';
+                }
+            });
+
+            // FUNCIONES PARA MOSTRAR INFORMACIÓN MÉDICA
+            async function showMedicalInfo() {
+                try {
+                    const response = await fetch('/get-medical-data');
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayMedicalInfo(data);
+                    } else {
+                        alert('Error obteniendo información médica');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error de conexión');
+                }
+            }
+
+            function displayMedicalInfo(data) {
+                const contentDiv = document.getElementById('medical-info-content');
+                
+                if (!data || !data.full_name) {
+                    contentDiv.innerHTML = `
+                        <div class="no-data-message">
+                            <i class="fas fa-info-circle" style="font-size: 2rem; color: #7B1E1E; margin-bottom: 10px;"></i>
+                            <p>No hay información médica configurada.</p>
+                            <p style="font-size: 0.9rem; margin-top: 10px;">Configure sus datos médicos usando el botón "Configurar Datos".</p>
+                        </div>
+                    `;
+                } else {
+                    contentDiv.innerHTML = `
+                        <div class="info-item">
+                            <div class="info-label">👤 Nombre Completo</div>
+                            <div class="info-value">${data.full_name}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">🩸 Grupo Sanguíneo</div>
+                            <div class="info-value">${data.blood_type || 'No especificado'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">⚠️ Alergias Importantes</div>
+                            <div class="info-value">${data.allergies || 'Ninguna registrada'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">📞 Contacto de Emergencia</div>
+                            <div class="info-value">
+                                ${data.emergency_contact_name || 'No especificado'}<br>
+                                <strong>${data.emergency_contact_phone || 'No especificado'}</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">🏥 Condiciones Médicas</div>
+                            <div class="info-value">${data.medical_conditions || 'Ninguna registrada'}</div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-label">💊 Medicamentos Vitales</div>
+                            <div class="info-value">${data.vital_medications || 'Ninguno registrado'}</div>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('info-display-popup').style.display = 'flex';
+            }
+
+            function closeInfoDisplay() {
+                document.getElementById('info-display-popup').style.display = 'none';
+            }
+
+            // Eventos del modelo
+            modelViewer.addEventListener('load', () => {
+                console.log('Modelo 3D cargado');
+            });
+
+            modelViewer.addEventListener('error', (event) => {
+                console.error('Error cargando modelo:', event);
+                fullscreenOverlay.innerHTML = `
+                    <i class="fas fa-exclamation-triangle fullscreen-icon"></i>
+                    <p class="fullscreen-text">Error al cargar el modelo</p>
+                `;
+            });
+
+            // Cerrar popups al hacer click fuera de ellos
+            window.addEventListener('click', (event) => {
+                const medicalPopup = document.getElementById('medical-form-popup');
+                const infoPopup = document.getElementById('info-display-popup');
+                
+                if (event.target === medicalPopup) {
+                    closeMedicalForm();
+                }
+                
+                if (event.target === infoPopup) {
+                    closeInfoDisplay();
+                }
+            });
+        </script>
+        
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50">
+            <div class="container px-4 px-lg-5">Copyright &copy; Toto 2025-2026</div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>
