@@ -1,4 +1,6 @@
 La fase BETA de DOT · tag consiste en la simulaciñon de un llavero el cual tiene la capacidad de almacenar información única la cual el usuario de cada dispositivo puede ingresar y eliminar cuando desee, siempre y cuando tenga acceso a una red, ya que para editarlo es necesario acceder a la página en donde se puede configurar, pero la información si se puede mostrar estado desconectado, al escanear el llavero usando tecnología NFC, este mostrará la información vital previamente cargada por el usuario. Por temas de tiempo y dinero, la producción de llaveros se pospondrá para finales del año 2025 e inicios del año 2026. Pero aquí está disponible la página en el cual hay acceso a información sobre DOT·, el proyecto tag y una simulación 3D de un dispositivo único para cada usuario.
+
+
 El enfoque monolítico fue la mejor elección para la arquitectura de DOT tag, ya que permitió concentrar todos los componentes en una sola aplicación dentro de la máquina virtual, simplificando la gestión y el despliegue. Al ser un proyecto académico con recursos limitados, esta decisión favoreció la eficiencia en tiempo, mantenimiento y uso de infraestructura.
 
 Entre sus principales ventajas destacan:
