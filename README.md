@@ -14,3 +14,9 @@ Facilidad de pruebas y depuración, gracias a la integración en un único bloqu
 Optimización de recursos, aprovechando mejor la memoria, CPU y almacenamiento de la VM.
 
 Adecuación al alcance del proyecto, priorizando una solución funcional, estable y rápida de implementar.
+
+
+
+
+PD: para poder ejecutar este proyecto basta con abrrirlo en VScode o cualquier otro entorno de programación de preferencia, y ejecutar en la terminal "npm start" obviamente contando con la dependencia de Node.js instalada previamente y se accede desde el localhost:3000. Haciendo uso de la arquitectura monolitica primero se instala el proyecto dento de la maquina virtual y se realiza el mismo comando, y dentro de otra maquina se ingresa la ip publica y el puerto 3000.
+
